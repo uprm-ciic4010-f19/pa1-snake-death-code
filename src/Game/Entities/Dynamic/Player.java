@@ -14,7 +14,7 @@ public class Player {
     public int lenght;
     public boolean justAte;
     private Handler handler;
-
+    private double speed =5;
     public int xCoord;
     public int yCoord;
 
@@ -35,10 +35,19 @@ public class Player {
 
     public void tick(){
         moveCounter++;
-        if(moveCounter>=5) {
+        if(moveCounter>=speed) {
             checkCollisionAndMove();
             moveCounter=0;
         }
+        //increase snake speed
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_ADD)){
+        	speed = speed - 0.5;
+        }
+        //decrease snake speed
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_MINUS)){
+        	speed = speed + 0.5;
+        }
+        
         if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP)){
             direction="Up";
         }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN)){
@@ -48,8 +57,13 @@ public class Player {
         }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT)){
             direction="Right";
         }
-
-    }
+        
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
+        Tail tail=new Tail(handler.getWorld().body.getLast().x,handler.getWorld().body.getLast().y,handler);
+        handler.getWorld().body.addLast(tail); 
+        }
+        }
+        
 
     public void checkCollisionAndMove(){
         handler.getWorld().playerLocation[xCoord][yCoord]=false;
