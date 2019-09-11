@@ -6,6 +6,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
+import Game.Entities.Static.Score;
+import Game.GameStates.State;
+
 /**
  * Created by AlexVR on 7/2/2018.
  */
@@ -14,9 +17,23 @@ public class Player {
     public int lenght;
     public boolean justAte;
     private Handler handler;
-
+    private double speed =5;
     public int xCoord;
     public int yCoord;
+    
+    // GameOver State
+	private State GameOver;
+	
+	// Score
+	public int score = 0;
+	public double trackScore;
+	
+	
+    public int getScore() {
+    	return this.score;
+    }
+    
+    
 
     public int moveCounter;
 
@@ -35,10 +52,25 @@ public class Player {
 
     public void tick(){
         moveCounter++;
-        if(moveCounter>=5) {
+        if(moveCounter>=speed) {
             checkCollisionAndMove();
             moveCounter=0;
+        }   
+        
+        //Pause Key (Utilize either P key or Spacebar)
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_SPACE) || handler.getKeyManager().keyJustPressed(KeyEvent.VK_P)){
+            State.setState(handler.getGame().pauseState);
         }
+        
+        //Increase snake speed
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_ADD)){
+        	speed = speed - 0.5;
+        }
+        //Decrease snake speed
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_MINUS)){
+        	speed = speed + 0.5;
+        }
+        
         if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP)){
             direction="Up";
         }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN)){
@@ -48,13 +80,28 @@ public class Player {
         }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT)){
             direction="Right";
         }
+        
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
+        Tail tail=new Tail(handler.getWorld().body.getLast().x,handler.getWorld().body.getLast().y,handler);
+        handler.getWorld().body.addLast(tail); 
+        }
+        }
+        
 
-    }
-
+    // Collision
     public void checkCollisionAndMove(){
         handler.getWorld().playerLocation[xCoord][yCoord]=false;
         int x = xCoord;
         int y = yCoord;
+        for(int j=0;j<handler.getWorld().body.size();j++) {
+        	//testing
+        	System.out.printf("X coordinate %s", xCoord);
+        	System.out.printf("Y coordinate %s", yCoord);
+        	
+        	if(handler.getWorld().body.get(j).x==xCoord&&handler.getWorld().body.get(j).y==yCoord) {
+        		kill();
+        	}
+        }
         switch (direction){
             case "Left":
                 if(xCoord==0){
@@ -65,21 +112,27 @@ public class Player {
                 break;
             case "Right":
                 if(xCoord==handler.getWorld().GridWidthHeightPixelCount-1){
-                    kill();
+                    //
+                	
+                	kill();
                 }else{
                     xCoord++;
                 }
                 break;
             case "Up":
                 if(yCoord==0){
+                	//
+                	
                     kill();
                 }else{
-                    yCoord--;
+                    yCoord --;
                 }
                 break;
             case "Down":
                 if(yCoord==handler.getWorld().GridWidthHeightPixelCount-1){
-                    kill();
+                    //
+                	
+                	kill();
                 }else{
                     yCoord++;
                 }
@@ -96,11 +149,26 @@ public class Player {
             handler.getWorld().playerLocation[handler.getWorld().body.getLast().x][handler.getWorld().body.getLast().y] = false;
             handler.getWorld().body.removeLast();
             handler.getWorld().body.addFirst(new Tail(x, y,handler));
+        }for(int i = 0; i < handler.getWorld().body.size();i++) {
+        	if(xCoord == handler.getWorld().body.get(i).x && yCoord == handler.getWorld().body.get(i).y) {
+        		kill();
+        	}
         }
-
     }
 
+    // I have no idea how am I suppose to use this :V
+    public void hit() {
+    	//score++;
+    	trackScore = Math.sqrt(2*score+1);
+    	
+    	
+    }
+    
+    
+    // Render
+   
     public void render(Graphics g,Boolean[][] playeLocation){
+   
         Random r = new Random();
         for (int i = 0; i < handler.getWorld().GridWidthHeightPixelCount; i++) {
             for (int j = 0; j < handler.getWorld().GridWidthHeightPixelCount; j++) {
@@ -112,11 +180,15 @@ public class Player {
                             handler.getWorld().GridPixelsize,
                             handler.getWorld().GridPixelsize);
                 }
-
             }
         }
-
-
+        // Render Score
+        //handler.getWorld().score.setScore(g);
+        
+		g.setColor(Color.WHITE);
+		g.setFont(new Font("Ubuntu", Font.BOLD, 20));
+		g.drawString("Score " + this.getScore(), 50, 50);
+    		
     }
 
     public void Eat(){
@@ -144,10 +216,8 @@ public class Player {
                             tail=new Tail(handler.getWorld().body.getLast().x,this.yCoord-1,handler);
                         }else{
                             tail=new Tail(handler.getWorld().body.getLast().x,this.yCoord+1,handler);
-
                         }
                     }
-
                 }
                 break;
             case "Right":
@@ -195,7 +265,6 @@ public class Player {
                             tail=(new Tail(handler.getWorld().body.getLast().x+1,this.yCoord,handler));
                         }
                     }
-
                 }
                 break;
             case "Down":
@@ -223,17 +292,22 @@ public class Player {
                 }
                 break;
         }
+           
+        
         handler.getWorld().body.addLast(tail);
+        
         handler.getWorld().playerLocation[tail.x][tail.y] = true;
+        this.score ++;
     }
 
     public void kill(){
         lenght = 0;
         for (int i = 0; i < handler.getWorld().GridWidthHeightPixelCount; i++) {
             for (int j = 0; j < handler.getWorld().GridWidthHeightPixelCount; j++) {
+               
 
                 handler.getWorld().playerLocation[i][j]=false;
-
+                State.setState(handler.getGame().gameOverState);
             }
         }
     }

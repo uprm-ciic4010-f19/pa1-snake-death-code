@@ -17,6 +17,11 @@ public class Apple {
         this.xCoord=x;
         this.yCoord=y;
     }
-
+    
+    // Is the Apple good or bad? for how long is 'good'?
+    public void isGood() {
+    	
+    	
+    }
 
 }

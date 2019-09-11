@@ -3,6 +3,7 @@ package Worlds;
 import Game.Entities.Dynamic.Player;
 import Game.Entities.Dynamic.Tail;
 import Game.Entities.Static.Apple;
+import Game.Entities.Static.Score;
 import Main.Handler;
 
 import java.awt.*;
@@ -23,19 +24,20 @@ public abstract class WorldBase {
     //The size of each box, the size of each box will be GridPixelsize x GridPixelsize.
     public int GridPixelsize;
 
-    public Player player;
 
     protected Handler handler;
 
 
     public Boolean appleOnBoard;
-    protected Apple apple;
+   protected Apple apple;
     public Boolean[][] appleLocation;
 
 
     public Boolean[][] playerLocation;
 
     public LinkedList<Tail> body = new LinkedList<>();
+
+
 
 
     public WorldBase(Handler handler){
@@ -51,13 +53,13 @@ public abstract class WorldBase {
 
     }
 
+    //Draw grid (for testing purposes)
     public void render(Graphics g){
-
         for (int i = 0; i <= 800; i = i + GridPixelsize) {
 
-            g.setColor(Color.white);
-            g.drawLine(0, i, handler.getWidth() , i);
-            g.drawLine(i,0,i,handler.getHeight());
+            //g.setColor(Color.white);
+            //g.drawLine(0, i, handler.getWidth() , i);
+            //g.drawLine(i,0,i,handler.getHeight());
 
         }
 
