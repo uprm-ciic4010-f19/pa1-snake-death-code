@@ -1,7 +1,9 @@
 package Game.GameStates;
 
+
 import Main.Handler;
 import Resources.Images;
+import UI.ClickListlener;
 import UI.UIImageButton;
 import UI.UIManager;
 
@@ -10,30 +12,26 @@ import java.awt.*;
 /**
  * Created by AlexVR on 7/1/2018.
  */
-public class PauseState extends State {
+public class GameOverState extends State {
 
     private int count = 0;
     private UIManager uiManager;
 
-    public PauseState(Handler handler) {
+    public GameOverState(Handler handler) {
         super(handler);
         uiManager = new UIManager(handler);
         handler.getMouseManager().setUimanager(uiManager);
 
-        uiManager.addObjects(new UIImageButton(290, 400, 250, 80, Images.Resume, () -> {
-            handler.getMouseManager().setUimanager(null);
-            State.setState(handler.getGame().gameState);
+
+        uiManager.addObjects(new UIImageButton(handler.getWidth()/2-105, handler.getHeight()/2+250, 200, 80, Images.butstart, new ClickListlener() {
+            @Override
+            public void onClick() {
+                handler.getMouseManager().setUimanager(null);
+                handler.getGame().reStart();
+                State.setState(handler.getGame().gameState);
+            }
         }));
 
-        uiManager.addObjects(new UIImageButton(56, 223+(64+16), 128, 64, Images.Options, () -> {
-            handler.getMouseManager().setUimanager(null);
-            State.setState(handler.getGame().menuState);
-        }));
-
-        uiManager.addObjects(new UIImageButton(56, (400+(100+100))+(100+100), 128, 64, Images.BTitle, () -> {
-            handler.getMouseManager().setUimanager(null);
-            State.setState(handler.getGame().menuState);
-        }));
 
 
 
@@ -59,8 +57,9 @@ public class PauseState extends State {
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Images.Pause,0,0,800,600,null);
+    	g.drawImage(Images.GameOver, 0, 0,800,600,null);
         uiManager.Render(g);
 
     }
 }
+

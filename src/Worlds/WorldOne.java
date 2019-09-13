@@ -22,10 +22,15 @@ public class WorldOne extends WorldBase{
 
     }
 
+    int counter = 0;
+    
     @Override
     public void tick() {
         super.tick();
+        counter++;
+//        System.out.println(counter);
         player.tick();
+        
         if(!appleOnBoard){
             appleOnBoard=true;
             int appleX = new Random().nextInt(handler.getWorld().GridWidthHeightPixelCount-1);
@@ -42,6 +47,19 @@ public class WorldOne extends WorldBase{
             apple = new Apple(handler,appleX,appley);
             appleLocation[appleX][appley]=true;
 
+        }
+        
+        //rotten beginning 
+        else {
+        	if (counter % player.speed == 0) {
+        		apple.turnsPassed++;
+        		if (apple.turnsPassed == 60) {
+        			apple.setGood(false); 
+//        			System.out.println("Apple is rotten :(");
+        		} 
+        				 
+        		
+        	}   
         }
     }
 

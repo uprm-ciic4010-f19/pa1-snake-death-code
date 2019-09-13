@@ -13,7 +13,7 @@ import java.awt.*;
  */
 public class GameState extends State {
 
-    private WorldBase world;
+    public WorldBase world;
 
     public GameState(Handler handler){
         super(handler);
