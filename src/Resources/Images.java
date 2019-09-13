@@ -29,7 +29,7 @@ public class Images {
 
         try {
 
-//            title = ImageIO.read(getClass().getResourceAsStream("/Sheets/Title.png"));
+           title = ImageIO.read(getClass().getResourceAsStream("/Sheets/snakeTitle2.png"));
             Pause = ImageIO.read(getClass().getResourceAsStream("/Buttons/SnakePaused.png"));
             Resume[0] = ImageIO.read(getClass().getResourceAsStream("/Buttons/startbutton.png"));
             Resume[1] = ImageIO.read(getClass().getResourceAsStream("/Buttons/startbuttonhover .png"));

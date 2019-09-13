@@ -25,6 +25,19 @@ public class Player {
 
 	private State GameOver;
 	
+	
+	// Score
+    public int score = 0;
+    public double trackScore;
+
+
+    public int getScore() {
+        return this.score;
+    }
+	
+
+	
+	
 	public String direction;// is your first name one?
 	public String facing;
 
@@ -38,6 +51,9 @@ public class Player {
 		justAte = false;
 		lenght = 1;
 
+	
+		
+		
 	}
 
 	  
@@ -77,24 +93,21 @@ public class Player {
 			direction = "Right";
 		}
 
-		// needs fix
-//         
-//    if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
-//     Tail tail=new Tail(handler.getWorld().body.getLast().x,handler.getWorld().body.getLast().y,handler);
-//     handler.getWorld().body.addLast(tail); 
-//      }
+    
+		//Add the N button (Adds a New Tail!)	
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
 
-//        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
-//       	handler.getWorld().playerLocation = new Boolean[0][0];
-//        }
-//        
-//        
-//        
+	     handler.getWorld().body.addLast(new Tail(xCoord, yCoord,handler));
+	             Eat();
+	             if (handler.getWorld().appleOnBoard == false) {
+	                 handler.getWorld().appleOnBoard=true;
+	             this.score--;
+	             
+	                 
+	                 }
+	             }
 	}
-//}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
-//	lenght++;
-//    Tail tail= null;
-//    
+
 
 	public void checkCollisionAndMove() {
 		handler.getWorld().playerLocation[xCoord][yCoord] = false;
@@ -103,7 +116,10 @@ public class Player {
 		switch (direction) {
 		case "Left":
 			if (xCoord == 0) {
-				kill();
+				
+			// Teleport to The Right
+			xCoord = handler.getWorld().GridWidthHeightPixelCount-1;
+                
 			} else if (facing != "Right") {
 				xCoord--;
 				facing = direction;
@@ -114,7 +130,10 @@ public class Player {
 			break;
 		case "Right":
 			if (xCoord == handler.getWorld().GridWidthHeightPixelCount - 1) {
-				kill();
+				
+			// Teleport to the Left
+			xCoord = 0;	
+				
 			} else if (facing != "Left") {
 				xCoord++;
 				facing = direction;
@@ -125,7 +144,9 @@ public class Player {
 			break;
 		case "Up":
 			if (yCoord == 0) {
-				kill();
+				// Teleport Down
+                yCoord = handler.getWorld().GridWidthHeightPixelCount-1;
+          
 			} else if (facing != "Down") {
 				yCoord--;
 				facing = direction;
@@ -136,7 +157,8 @@ public class Player {
 			break;
 		case "Down":
 			if (yCoord == handler.getWorld().GridWidthHeightPixelCount - 1) {
-				kill();
+				// Teleport Up
+				yCoord = 0;
 			} else if (facing != "Up") {
 				yCoord++;
 				facing = direction;
@@ -157,6 +179,11 @@ public class Player {
 					.getLast().y] = false;
 			handler.getWorld().body.removeLast();
 			handler.getWorld().body.addFirst(new Tail(x, y, handler));
+		}
+		for (int i = 0; i < handler.getWorld().body.size(); i++) {
+			if (xCoord == handler.getWorld().body.get(i).x && yCoord==handler.getWorld().body.get(i).y) {
+				kill();
+			}
 		}
 
 	}
@@ -188,6 +215,12 @@ public class Player {
 
 			}
 		}
+		
+		
+		//Draw the Score
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Ubuntu", Font.BOLD, 20));
+        g.drawString("Score " + this.getScore(), 50, 50);
 
 	}
 
@@ -300,6 +333,12 @@ public class Player {
 			}
 			handler.getWorld().body.addLast(tail);
 			handler.getWorld().playerLocation[tail.x][tail.y] = true;
+            
+			// Add the Score
+			this.score += 1;
+
+            this.speed--;
+     
 		}
 	}
 
