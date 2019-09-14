@@ -49,6 +49,12 @@ public class DisplayScreen {
         canvas.setFocusable(false);
         canvas.setBackground(Color.black);
 
+        // Custom Color for Background
+        Color backgroundColor = new Color(86, 195, 67);
+        
+        canvas.setBackground(backgroundColor);
+        
+        
         frame.add(canvas);
         frame.pack();
     }

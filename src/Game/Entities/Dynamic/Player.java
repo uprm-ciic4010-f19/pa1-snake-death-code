@@ -36,8 +36,6 @@ public class Player {
     }
 	
 
-	
-	
 	public String direction;// is your first name one?
 	public String facing;
 
@@ -93,6 +91,8 @@ public class Player {
 			direction = "Right";
 		}
 
+		
+		
     
 		//Add the N button (Adds a New Tail!)	
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
@@ -101,11 +101,27 @@ public class Player {
 	             Eat();
 	             if (handler.getWorld().appleOnBoard == false) {
 	                 handler.getWorld().appleOnBoard=true;
-	             this.score--;
 	             
-	                 
+//	                  this.speed --;
+//		             if (this.score == 0 ) {
+//			             this.score = 0;}
+//		             else {this.score -=9;}
+//			                 
 	                 }
+
+	             
 	             }
+		
+        // Direction Handler, also, Backtracking Prevention has been added
+        if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP) && direction != "Down"){
+            direction="Up";
+        }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN) && direction != "Up"){
+            direction="Down";
+        }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_LEFT) && direction != "Right"){
+            direction="Left";
+        }if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT) && direction != "Left"){
+            direction="Right";
+        }
 	}
 
 
@@ -113,61 +129,43 @@ public class Player {
 		handler.getWorld().playerLocation[xCoord][yCoord] = false;
 		int x = xCoord;
 		int y = yCoord;
-		switch (direction) {
-		case "Left":
-			if (xCoord == 0) {
-				
-			// Teleport to The Right
-			xCoord = handler.getWorld().GridWidthHeightPixelCount-1;
+        switch (direction){
+        case "Left":
+            if(xCoord==0){
+            	// Teleport to the Right
+            	xCoord = handler.getWorld().GridWidthHeightPixelCount-1;
+            }else{
+                xCoord--;
+            }
+            break;
+        case "Right":
+            if(xCoord==handler.getWorld().GridWidthHeightPixelCount-1){
+                // Teleport to the Left
+            	xCoord = 0;
+            	
+            }else{
+                xCoord++;
+            }
+            break;
+        case "Up":
+            if(yCoord==0){
+            	// Teleport Down
+            	 yCoord = handler.getWorld().GridWidthHeightPixelCount-1;
                 
-			} else if (facing != "Right") {
-				xCoord--;
-				facing = direction;
-			}
-			else {
-				direction = facing;
-			}
-			break;
-		case "Right":
-			if (xCoord == handler.getWorld().GridWidthHeightPixelCount - 1) {
-				
-			// Teleport to the Left
-			xCoord = 0;	
-				
-			} else if (facing != "Left") {
-				xCoord++;
-				facing = direction;
-			}
-			else {
-				direction = facing;
-			}
-			break;
-		case "Up":
-			if (yCoord == 0) {
-				// Teleport Down
-                yCoord = handler.getWorld().GridWidthHeightPixelCount-1;
-          
-			} else if (facing != "Down") {
-				yCoord--;
-				facing = direction;
-			}
-			else {
-				direction = facing;
-			}
-			break;
-		case "Down":
-			if (yCoord == handler.getWorld().GridWidthHeightPixelCount - 1) {
-				// Teleport Up
-				yCoord = 0;
-			} else if (facing != "Up") {
-				yCoord++;
-				facing = direction;
-			}
-			else {
-				direction = facing;
-			}
-			break;
-		}
+            }else{
+                yCoord --;
+            }
+            break;
+        case "Down":
+            if(yCoord==handler.getWorld().GridWidthHeightPixelCount-1){
+                // Teleport Up
+            	 yCoord = 0;
+            	
+            }else{
+                yCoord++;
+            }
+            break;
+    }
 		handler.getWorld().playerLocation[xCoord][yCoord] = true;
 
 		if (handler.getWorld().appleLocation[xCoord][yCoord]) {
@@ -180,6 +178,8 @@ public class Player {
 			handler.getWorld().body.removeLast();
 			handler.getWorld().body.addFirst(new Tail(x, y, handler));
 		}
+		
+		// Kill the snake if it hits with itself
 		for (int i = 0; i < handler.getWorld().body.size(); i++) {
 			if (xCoord == handler.getWorld().body.get(i).x && yCoord==handler.getWorld().body.get(i).y) {
 				kill();
@@ -189,23 +189,35 @@ public class Player {
 	}
 
 	public void render(Graphics g, Boolean[][] playeLocation) {
+		
+		//Custom Colors for Apple
+		Color appleColor = new Color(190, 0, 45);
+		Color appleRottenColor = new Color(124, 128, 95);
+		
+		
 		Random r = new Random();
 		for (int i = 0; i < handler.getWorld().GridWidthHeightPixelCount; i++) {
 			for (int j = 0; j < handler.getWorld().GridWidthHeightPixelCount; j++) {
 				g.setColor(Color.white);
 
 				if (playeLocation[i][j]) {
-//                	System.out.println(handler.getWorld().GridWidthHeightPixelCount);
+					
+					//Coordinate System on Grid, for testing.
+					//System.out.println(handler.getWorld().GridWidthHeightPixelCount);
+					
 					g.fillRect((i * handler.getWorld().GridPixelsize), (j * handler.getWorld().GridPixelsize),
 							handler.getWorld().GridPixelsize, handler.getWorld().GridPixelsize);
 				}
 				
+				// Draw a Good Apple
 				if (handler.getWorld().appleLocation[i][j]) {
 					if(handler.getGame().gameState.world.apple.isGood()) {
-						g.setColor(Color.white);
+						g.setColor(appleColor);
 					}
 					else {
-						g.setColor(Color.magenta);
+				// Draw a Rotten Apple, great job Slowpoke.
+						g.setColor(appleRottenColor);
+					
 					}
 					
 					
@@ -315,7 +327,7 @@ public class Player {
 						} else {
 							tail = (new Tail(this.xCoord + 1, this.yCoord, handler));
 						}
-						System.out.println("Tu biscochito");
+			
 					}
 				} else {
 					if (handler.getWorld().body.getLast().y != 0) {
@@ -335,13 +347,18 @@ public class Player {
 			handler.getWorld().playerLocation[tail.x][tail.y] = true;
             
 			// Add the Score
-			this.score += 1;
+			this.score += 9;
 
             this.speed--;
-     
+            
+            // Compute rotten score
+            if(handler.getGame().gameState.world.apple.isGood()) {
+            	this.score += Math.sqrt(2*score+1); 
+            }
 		}
 	}
 
+	// Kill the snake, because you hate it
 	public void kill() {
 		lenght = 0;
 		for (int i = 0; i < handler.getWorld().GridWidthHeightPixelCount; i++) {
